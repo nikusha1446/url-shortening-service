@@ -92,3 +92,49 @@ export const getOriginalUrl = async (req, res) => {
     });
   }
 };
+
+export const updateUrl = async (req, res) => {
+  try {
+    const { shortCode } = req.params;
+    const { url } = req.body;
+
+    if (!url) {
+      return res.status(400).json({
+        error: 'URL is required',
+      });
+    }
+
+    try {
+      new URL(url);
+    } catch (error) {
+      return res.status(400).json({
+        error: 'Invalid URL format',
+      });
+    }
+
+    const updatedUrl = await prisma.url.update({
+      where: {
+        shortCode,
+      },
+      data: { url },
+    });
+
+    res.status(200).json({
+      id: updatedUrl.id,
+      url: updatedUrl.url,
+      shortCode: updatedUrl.shortCode,
+      createdAt: updatedUrl.createdAt,
+      updatedAt: updatedUrl.updatedAt,
+    });
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        error: 'Short URL not found',
+      });
+    }
+    console.error(error);
+    res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+};
