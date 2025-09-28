@@ -1,9 +1,8 @@
 import express from 'express';
+import { createShortUrl } from '../controllers/urlController.js';
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  res.json({ message: 'Create short URL endpoint' });
-});
+router.post('/', createShortUrl);
 
 router.get('/:shortCode', (req, res) => {
   res.json({ message: 'Get original URL endpoint' });

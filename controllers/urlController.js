@@ -1,0 +1,58 @@
+import prisma from '../config/prisma.js';
+import { generateShortCode } from '../utils/generateShortCode.js';
+
+export const createShortUrl = async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    if (!url) {
+      return res.status(400).json({
+        error: 'URL is required',
+      });
+    }
+
+    try {
+      new URL(url);
+    } catch (error) {
+      return res.status(400).json({
+        error: 'Invalid URL format',
+      });
+    }
+
+    let shortCode;
+    let isUnique = false;
+
+    while (!isUnique) {
+      shortCode = generateShortCode();
+      const existing = await prisma.url.findUnique({
+        where: {
+          shortCode,
+        },
+      });
+
+      if (!existing) {
+        isUnique = true;
+      }
+    }
+
+    const newUrl = await prisma.url.create({
+      data: {
+        url,
+        shortCode,
+      },
+    });
+
+    res.status(201).json({
+      id: newUrl.id,
+      url: newUrl.url,
+      shortCode: newUrl.shortCode,
+      createdAt: newUrl.createdAt,
+      updatedAt: newUrl.updatedAt,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+};
