@@ -138,3 +138,25 @@ export const updateUrl = async (req, res) => {
     });
   }
 };
+
+export const deleteUrl = async (req, res) => {
+  try {
+    const { shortCode } = req.params;
+
+    await prisma.url.delete({
+      where: { shortCode },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        error: 'Short URL not found',
+      });
+    }
+    console.error(error);
+    res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+};

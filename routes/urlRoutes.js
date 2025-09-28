@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createShortUrl,
+  deleteUrl,
   getOriginalUrl,
   updateUrl,
 } from '../controllers/urlController.js';
@@ -12,9 +13,7 @@ router.get('/:shortCode', getOriginalUrl);
 
 router.put('/:shortCode', updateUrl);
 
-router.delete('/:shortCode', (req, res) => {
-  res.json({ message: 'Delete URL endpoint' });
-});
+router.delete('/:shortCode', deleteUrl);
 
 router.get('/:shortCode/stats', (req, res) => {
   res.json({ message: 'Get URL statistics endpoint' });
