@@ -160,3 +160,33 @@ export const deleteUrl = async (req, res) => {
     });
   }
 };
+
+export const getUrlStats = async (req, res) => {
+  try {
+    const { shortCode } = req.params;
+
+    const urlRecord = await prisma.url.findUnique({
+      where: {
+        shortCode,
+      },
+    });
+
+    if (!urlRecord) {
+      return res.status(404).json({
+        error: 'Short URL not found',
+      });
+    }
+
+    res.status(200).json({
+      id: urlRecord.id,
+      url: urlRecord.url,
+      shortCode: urlRecord.shortCode,
+      createdAt: urlRecord.createdAt,
+      updatedAt: urlRecord.updatedAt,
+      accessCount: urlRecord.accessCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

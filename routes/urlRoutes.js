@@ -3,6 +3,7 @@ import {
   createShortUrl,
   deleteUrl,
   getOriginalUrl,
+  getUrlStats,
   updateUrl,
 } from '../controllers/urlController.js';
 const router = express.Router();
@@ -15,8 +16,6 @@ router.put('/:shortCode', updateUrl);
 
 router.delete('/:shortCode', deleteUrl);
 
-router.get('/:shortCode/stats', (req, res) => {
-  res.json({ message: 'Get URL statistics endpoint' });
-});
+router.get('/:shortCode/stats', getUrlStats);
 
 export default router;
