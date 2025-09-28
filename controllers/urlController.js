@@ -56,3 +56,39 @@ export const createShortUrl = async (req, res) => {
     });
   }
 };
+
+export const getOriginalUrl = async (req, res) => {
+  try {
+    const { shortCode } = req.params;
+
+    const urlRecord = await prisma.url.update({
+      where: {
+        shortCode,
+      },
+      data: {
+        accessCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    res.status(200).json({
+      id: urlRecord.id,
+      url: urlRecord.url,
+      shortCode: urlRecord.shortCode,
+      createdAt: urlRecord.createdAt,
+      updatedAt: urlRecord.updatedAt,
+    });
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        error: 'Short URL not found',
+      });
+    }
+
+    console.error(error);
+    res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+};
